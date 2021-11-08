@@ -1,5 +1,4 @@
 // Created by nat-s.skv@mail.ru on 28.10.2021.
-
 extern "C" {
 #include <max_ascending_seq.h>
 #include <file.h>
@@ -37,7 +36,6 @@ protected:
         fseek(f2, 0, SEEK_SET);
         char buf1[bufSize];
         char buf2[bufSize];
-
         while (!feof(f1) && !feof(f2)) {
             if (!fgets(buf1, bufSize, f1)) {
                 buf1[0] = 0;
@@ -45,12 +43,48 @@ protected:
             if (!fgets(buf2, bufSize, f2)) {
                 buf2[0] = 0;
             }
-            EXPECT_EQ(std::memcmp(buf1, buf2, strlen(buf1)), 0);
+            EXPECT_STREQ(buf1, buf2);
         }
-        EXPECT_TRUE(feof(f1) && feof(f2));
+        if (!fgets(buf1, bufSize, f1)) {
+            buf1[0] = 0;
+        }
+        EXPECT_TRUE(feof(f1));
+        EXPECT_TRUE(feof(f2));
     }
 };
 
+class FixtureLoadUploadInvalidFin : public ::testing::Test {
+protected:
+    static const int bufSize = 100;
+
+    void SetUp(const char *finPath, const char *foutPath) {
+        FILE *fin = open_file(finPath, "r");
+        FILE *fout = open_file(foutPath, "w+");
+        ASSERT_TRUE(fin && fout);
+
+        int *array = NULL;
+        size_t size = 0u;
+        load_arr_from_file(fin, &array, &size);
+        upload_arr_to_file(fout, array, size);
+
+        EXPECT_TRUE(IsEmpty(fout));
+
+        free(array);
+        fclose(fin);
+        fclose(fout);
+    }
+
+    bool IsEmpty(FILE *file) {
+        if (!file) {
+            return false;
+        }
+        if (ferror(file)) {
+            return false;
+        }
+        fseek(file, 0, SEEK_END);
+        return ftell(file) == 0;
+    }
+};
 
 TEST_F(FixtureLoadUpload, LOAD_UPLOAD_LEN_10) {
     FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/10_out_of_10/fin",
@@ -82,11 +116,15 @@ TEST_F(FixtureLoadUpload, LOAD_UPLOAD_LEN_17) {
                              PROJECT_PATH "test/fin_fout/16_out_of_17/fout");
 }
 
-TEST_F(FixtureLoadUpload, LOAD_UPLOAD_EMPTY_FILE) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin",
+TEST_F(FixtureLoadUploadInvalidFin, LOAD_UPLOAD_EMPTY_FILE) {
+    FixtureLoadUploadInvalidFin::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin",
                              PROJECT_PATH "test/fin_fout/empty_array/fout");
 }
 
+TEST_F(FixtureLoadUploadInvalidFin, LOAD_UPLOAD_TEXT_FILE) {
+    FixtureLoadUploadInvalidFin::SetUp(PROJECT_PATH "test/fin_fout/invalid_args/text",
+                                   PROJECT_PATH "test/fin_fout/invalid_args/text_fout");
+}
 
 TEST(LOAD, INVALID_ARGS) {
     size_t size = 0u;

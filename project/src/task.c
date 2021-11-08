@@ -7,6 +7,10 @@
 #include <file.h>
 #include <max_ascending_seq.h>
 #include <stdlib.h>
+#include <time.h>
+
+#define MICROSECOND_IN_SECOND 1000000
+#define NANOSECOND_IN_MICROSECOND 1000
 
 int get_fin_fout(int argc, char *argv[], FILE **fin, FILE **fout);
 
@@ -19,18 +23,23 @@ int run(int argc, char *argv[]) {
 
     int *array = NULL;
     size_t size = 0u;
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     if (load_arr_from_file(fin, &array, &size)) {
         perror_file("error of loading array from file");
-        if(close_file(fin) || close_file(fout)) {
+        if (close_file(fin) || close_file(fout)) {
             perror_file(NULL);
         }
         return 1;
     }
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+    printf("time multi:  %ld nanoseconds\n", (end.tv_sec - start.tv_sec) * MICROSECOND_IN_SECOND +
+                                             (end.tv_nsec - start.tv_nsec) / NANOSECOND_IN_MICROSECOND);
 
     fprintf(fout, "%zu", get_max_asc_seq_len(array, size));
 
     free(array);
-    if(close_file(fin) || close_file(fout)) {
+    if (close_file(fin) || close_file(fout)) {
         perror_file(NULL);
     }
     return 0;

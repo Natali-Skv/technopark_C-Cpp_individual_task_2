@@ -9,7 +9,7 @@ extern "C" {
 #include <cstring>
 #include <fstream>
 
-class FixtureLoadUpload : public ::testing::Test {
+class Fixture : public ::testing::Test {
 protected:
 
     void SetUp(const char *finPath, size_t expLen) {
@@ -27,32 +27,32 @@ protected:
 
 };
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_10) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/10_out_of_10/fin", 10u);
+TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_10) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/10_out_of_10/fin", 10u);
 }
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_SEQ_LEN_14_OUT_OF_40) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/14_out_of_40/fin", 14u);
+TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_14_OUT_OF_40) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/14_out_of_40/fin", 14u);
 }
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_SEQ_LEN_1_OUT_OF_100) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/1_out_of_100/fin", 1u);
+TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_1_OUT_OF_100) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/1_out_of_100/fin", 1u);
 }
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_SEQ_LEN_16_OUT_OF_17) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/16_out_of_17/fin", 16u);
+TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_16_OUT_OF_17) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/16_out_of_17/fin", 16u);
 }
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_SEQ_LEN_1_OUT_OF_1) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/1_out_of_1/fin", 1u);
+TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_1_OUT_OF_1) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/1_out_of_1/fin", 1u);
 }
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_20) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/10_out_of_20/fin", 10u);
+TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_20) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/10_out_of_20/fin", 10u);
 }
 
-TEST_F(FixtureLoadUpload, GET_MAX_ASC_EMPTY) {
-    FixtureLoadUpload::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin", 0u);
+TEST_F(Fixture, GET_MAX_ASC_EMPTY) {
+    Fixture::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin", 0u);
 }
 
 TEST(GET_MAX_SEQ_LEN, INVALID_ARGS) {
