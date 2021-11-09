@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [ dev , master]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+ 
+  build:
+   
+    runs-on: ubuntu-latest
+   
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a single command using the runners shell
+      - name: install linters
+        run: |
+          sudo apt install -y cppcheck
+          sudo apt install -y python3-pip
+          sudo pip install cpplint
+        
+      - name: install valgrind
+        run: sudo apt install valgrind
+        
+      - name: install gcovr and lcov
+        run: |
+          sudo apt install gcovr
+          sudo apt install lcov
+          
+      - name: run linters
+        run: |
+          cppcheck ./project/
+          find project/ -iname *.c | xargs cpplint --linelength=120
+          find project/ -iname *.h | xargs cpplint --linelength=120
+        
+      - name: build
+        run: |
+          mkdir build
+          cd build
+          sudo apt install -y libgtest-dev
+          cmake ..
+          make
+          
+      - name: tests 
+        run: |
+          cd build
+          valgrind --leak-check=full ./stress_test
+          valgrind --leak-check=full ./test_sinc
+          valgrind --leak-check=full ./test_asinc
+                
+      - name: Coverage test
+        run: |
+          sudo apt-get install lcov
+          mkdir coverage && cd coverage
+          gcov ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/file.c.gcno
+          cp -r ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/* .
+          cd ..
+          lcov --capture --directory coverage/ --output-file max_asc_seq.info
+          genhtml max_asc_seq.info --output-directory coverage-report/
+
+      - name: Archive coverage test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Coverage test
+          path: coverage-report/
+
+      - name: Valgrind tests
+        run: |
+          mkdir valgrind-report
+          valgrind --leak-check=full --tool=memcheck --show-leak-kinds=all --log-file=valgrind-report/report -q ./build/tests
+      - name: Archive valgrind test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Valgrind tests
+          path: valgrind-report/
+                     
