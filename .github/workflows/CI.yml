@@ -34,7 +34,6 @@ jobs:
         run: |
           cppcheck ./project/
           find project/ -iname *.c | xargs cpplint --linelength=120
-          find project/ -iname *.h | xargs cpplint --linelength=120
         
       - name: build
         run: |
