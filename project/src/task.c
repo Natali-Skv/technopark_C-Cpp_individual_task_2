@@ -23,8 +23,6 @@ int run(int argc, char *argv[]) {
 
     int *array = NULL;
     size_t size = 0u;
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     if (load_arr_from_file(fin, &array, &size)) {
         perror_file("error of loading array from file");
         if (close_file(fin) || close_file(fout)) {
@@ -32,12 +30,16 @@ int run(int argc, char *argv[]) {
         }
         return 1;
     }
+
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+
+//261185 //233532
+    fprintf(fout, "%zu", get_max_asc_seq_len(array, size));
+
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
     printf("time multi:  %ld nanoseconds\n", (end.tv_sec - start.tv_sec) * MICROSECOND_IN_SECOND +
                                              (end.tv_nsec - start.tv_nsec) / NANOSECOND_IN_MICROSECOND);
-
-    fprintf(fout, "%zu", get_max_asc_seq_len(array, size));
-
     free(array);
     if (close_file(fin) || close_file(fout)) {
         perror_file(NULL);
@@ -47,7 +49,7 @@ int run(int argc, char *argv[]) {
 
 int get_fin_fout(int argc, char *argv[], FILE **fin, FILE **fout) {
     int opt;
-    char *opts = ":i:o:";
+    const char *opts = ":i:o:";
     *fin = NULL;
     *fout = NULL;
 

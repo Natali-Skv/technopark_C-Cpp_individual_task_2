@@ -15,7 +15,7 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     }
     size_t max_asc_len = 0u;
     size_t curr_seq_len = 1u;
-    for (size_t i = 1u; i < size; ++i) {
+    for (size_t i = 1u; i < size && max_asc_len < size / 2 + 1; ++i) {
         if (array[i] > array[i - 1]) {
             ++curr_seq_len;
             continue;

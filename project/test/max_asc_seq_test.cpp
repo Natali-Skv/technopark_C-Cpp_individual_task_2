@@ -1,5 +1,5 @@
 // Created by nat-s.skv@mail.ru on 28.10.2021.
-
+#include <fstream>
 extern "C" {
 #include <max_ascending_seq.h>
 #include <file.h>
@@ -11,20 +11,23 @@ extern "C" {
 
 class Fixture : public ::testing::Test {
 protected:
-
-    void SetUp(const char *finPath, size_t expLen) {
+    size_t SetUp(const char *finPath, size_t expLen) {
         FILE *fin = open_file(finPath, "r");
-        ASSERT_TRUE(fin);
+        if(!fin) {
+            return 0;
+        }
 
         int *array = NULL;
         size_t size = 0u;
         load_arr_from_file(fin, &array, &size);
-        EXPECT_EQ(expLen, get_max_asc_seq_len(array, size));
+        size_t max_asc_len = get_max_asc_seq_len(array, size);
+
+        EXPECT_EQ(expLen, max_asc_len);
 
         free(array);
         close_file(fin);
+        return max_asc_len;
     }
-
 };
 
 TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_10) {
