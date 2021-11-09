@@ -1,4 +1,4 @@
-// Created by nat-s.skv@mail.ru on 28.10.2021.
+// Copyright 2021 nat-s.skv@mail.ru
 extern "C" {
 #include <max_ascending_seq.h>
 #include <file.h>
@@ -9,7 +9,7 @@ extern "C" {
 #include <fstream>
 
 class FixtureLoadUpload : public ::testing::Test {
-protected:
+ protected:
     static const int bufSize = 100;
 
     void SetUp(const char *finPath, const char *foutPath) {
@@ -45,16 +45,12 @@ protected:
             }
             EXPECT_STREQ(buf1, buf2);
         }
-        if (!fgets(buf1, bufSize, f1)) {
-            buf1[0] = 0;
-        }
-        EXPECT_TRUE(feof(f1));
-        EXPECT_TRUE(feof(f2));
+        EXPECT_TRUE(feof(f1) && feof(f2));
     }
 };
 
 class FixtureLoadUploadInvalidFin : public ::testing::Test {
-protected:
+ protected:
     static const int bufSize = 100;
 
     void SetUp(const char *finPath, const char *foutPath) {
@@ -118,12 +114,12 @@ TEST_F(FixtureLoadUpload, LOAD_UPLOAD_LEN_17) {
 
 TEST_F(FixtureLoadUploadInvalidFin, LOAD_UPLOAD_EMPTY_FILE) {
     FixtureLoadUploadInvalidFin::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin",
-                             PROJECT_PATH "test/fin_fout/empty_array/fout");
+                                       PROJECT_PATH "test/fin_fout/empty_array/fout");
 }
 
 TEST_F(FixtureLoadUploadInvalidFin, LOAD_UPLOAD_TEXT_FILE) {
     FixtureLoadUploadInvalidFin::SetUp(PROJECT_PATH "test/fin_fout/invalid_args/text",
-                                   PROJECT_PATH "test/fin_fout/invalid_args/text_fout");
+                                       PROJECT_PATH "test/fin_fout/invalid_args/text_fout");
 }
 
 TEST(LOAD, INVALID_ARGS) {
@@ -137,6 +133,7 @@ TEST(LOAD, INVALID_ARGS) {
     ASSERT_TRUE(fout);
     // fout открыт только на запись
     EXPECT_EQ(load_arr_from_file(fout, &array, &size), 1);
+    fclose(fout);
 }
 
 TEST(LOAD, ERANGE) {

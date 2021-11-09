@@ -1,4 +1,4 @@
-// Created by nat-s.skv@mail.ru on 28.10.2021.
+// Copyright 2021 nat-s.skv@mail.ru
 #include <getopt.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -34,7 +34,6 @@ int run(int argc, char *argv[]) {
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
-//261185 //233532
     fprintf(fout, "%zu", get_max_asc_seq_len(array, size));
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
