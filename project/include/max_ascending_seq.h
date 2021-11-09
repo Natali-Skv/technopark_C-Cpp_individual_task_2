@@ -1,12 +1,11 @@
-//
-// Created by nat-s.skv@mail.ru on 28.10.2021.
-//
+// Copyright 2021 nat-s.skv@mail.ru
 
-#ifndef TP_HW1_MAX_ASCENDING_LIB_H
-#define TP_HW1_MAX_ASCENDING_LIB_H
+
+#ifndef  PROJECT_INCLUDE_MAX_ASCENDING_SEQ_H_
+#define  PROJECT_INCLUDE_MAX_ASCENDING_SEQ_H_
 
 #include <stdio.h>
 
 size_t get_max_asc_seq_len(const int *array, size_t size);
 
-#endif //TP_HW1_MAX_ASCENDING_LIB_H
+#endif  // PROJECT_INCLUDE_MAX_ASCENDING_SEQ_H_

@@ -1,10 +1,8 @@
-//
-// Created by nat-s.skv@mail.ru on 28.10.2021.
-//
+// Copyright 2021 nat-s.skv@mail.ru
 
-#ifndef TECHNOPARK_C_CPP_INDIVIDUAL_TASK_2_TASK_H
-#define TECHNOPARK_C_CPP_INDIVIDUAL_TASK_2_TASK_H
+#ifndef PROJECT_INCLUDE_TASK_H_
+#define PROJECT_INCLUDE_TASK_H_
 
 int run(int argc, char *argv[]);
 
-#endif //TECHNOPARK_C_CPP_INDIVIDUAL_TASK_2_TASK_H
+#endif  // PROJECT_INCLUDE_TASK_H_

@@ -1,6 +1,5 @@
-//
-// Created by nat-s.skv@mail.ru on 28.10.2021.
-//
+// Copyright 2021 nat-s.skv@mail.ru
+
 #include <stdio.h>
 #include <stdlib.h>
 
