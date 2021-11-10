@@ -107,5 +107,7 @@ int main() {
     } else {
         std::cout << "stress test has been failed";
     }
+    fclose(asinc_result);
+    fclose(sinc_result);
     return 0;
 }
