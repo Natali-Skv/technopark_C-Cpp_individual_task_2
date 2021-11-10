@@ -161,7 +161,6 @@ TEST(LOAD, ERANGE) {
 TEST(OPEN_CLOSE, INVALID_ARGS) {
     EXPECT_EQ(open_file("none", "r"), (FILE *) NULL);
     EXPECT_EQ(open_file(PROJECT_PATH "test/fin_fout/invalid_args/erange_size", "none"), (FILE *) NULL);
-    EXPECT_EQ(open_file(PROJECT_PATH "test/fin_fout/invalid_args/mod_555", "w"), (FILE *) NULL);
 
     EXPECT_EQ(close_file(stdin), 0);
     EXPECT_EQ(close_file(NULL), 0);
