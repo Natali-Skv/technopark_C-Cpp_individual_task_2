@@ -69,10 +69,10 @@ jobs:
       - name: Valgrind tests
         run: |
           mkdir valgrind-report
-          valgrind --leak-check=full --tool=memcheck --show-leak-kinds=all --log-file=valgrind-report/report -q ./build/tests
+          valgrind --leak-check=full --tool=memcheck --show-leak-kinds=all --log-file=valgrind-report/report -q ./build/stress_test
       - name: Archive valgrind test results
         uses: actions/upload-artifact@v2
         with:
-          name: Valgrind tests
+          name: Valgrind test
           path: valgrind-report/
                      
