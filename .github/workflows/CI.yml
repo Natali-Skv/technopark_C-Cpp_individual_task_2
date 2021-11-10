@@ -46,9 +46,9 @@ jobs:
       - name: tests 
         run: |
           cd build
-          valgrind --leak-check=full ./stress_test
           valgrind --leak-check=full ./test_sinc
           valgrind --leak-check=full ./test_asinc
+          valgrind --leak-check=full ./stress_test
                 
       - name: Coverage test
         run: |
