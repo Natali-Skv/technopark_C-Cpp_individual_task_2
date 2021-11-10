@@ -54,8 +54,8 @@ jobs:
         run: |
           sudo apt-get install lcov
           mkdir coverage && cd coverage
-          gcov ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/file.c.gcno
-          cp -r ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/* .
+          gcov ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/file.c.gcno
+          cp -r ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/* .
           cd ..
           lcov --capture --directory coverage/ --output-file max_asc_seq.info
           genhtml max_asc_seq.info --output-directory coverage-report/
