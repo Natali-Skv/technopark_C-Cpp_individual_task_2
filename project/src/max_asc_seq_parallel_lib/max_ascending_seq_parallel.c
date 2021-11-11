@@ -133,8 +133,7 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     }
 
     for (size_t i = 0; i < count_thread; ++i) {
-        int check_flag = pthread_create(&threads[i], NULL,
-                                        find_len, (void *) limits[i]);
+        int check_flag = pthread_create(&threads[i], NULL, find_len, (void *) limits[i]);
         if (check_flag != 0) {
             return 0u;
         }
@@ -143,9 +142,9 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
         pthread_join(threads[i], NULL);
     }
 
-    int max_len = limits[0]->len;
-    for (size_t i = 1; i < count_thread; ++i) {
-        if (limits[i]->len > (size_t) max_len) {
+    size_t max_len = limits[0]->len;
+    for (size_t i = 1; i < count_thread && max_len <= size / 2u; ++i) {
+        if (limits[i]->len > max_len) {
             max_len = limits[i]->len;
         }
     }
