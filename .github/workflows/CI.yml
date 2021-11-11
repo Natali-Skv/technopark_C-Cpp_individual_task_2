@@ -54,8 +54,7 @@ jobs:
         run: |
           sudo apt-get install lcov
           mkdir coverage && cd coverage
-          mkdir coverage && cd coverage
-
+          
           gcov ../build/CMakeFiles/file_lib.dir/project/src/file.c.gcno
           gcov ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/max_ascending_seq.c.gcno
           gcov ../build/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/max_ascending_seq_parallel.c.gcno
