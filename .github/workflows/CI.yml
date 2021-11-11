@@ -54,11 +54,25 @@ jobs:
         run: |
           sudo apt-get install lcov
           mkdir coverage && cd coverage
-          gcov ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/file.c.gcno
-          cp -r ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq.dir/* .
+          mkdir coverage && cd coverage
+
+          gcov ../cmake-build-debug/CMakeFiles/file_lib.dir/project/src/file.c.gcno
+          gcov ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/max_ascending_seq.c.gcno
+          gcov ../cmake-build-debug/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/max_ascending_seq_parallel.c.gcno
+
+          cp -r ../cmake-build-debug/CMakeFiles/file_lib.dir/project/src/ .
+          cp -r ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/ .
+          cp -r ../cmake-build-debug/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/ .
+
           cd ..
-          lcov --capture --directory coverage/ --output-file max_asc_seq.info
-          genhtml max_asc_seq.info --output-directory coverage-report/
+          lcov --capture --directory coverage/ --output-file file.info
+          genhtml file.info --output-directory coverage-report/
+
+          lcov --capture --directory coverage/ --output-file max_ascending_seq.info
+          genhtml max_ascending_seq.info --output-directory coverage-report/
+
+          lcov --capture --directory coverage/ --output-file max_ascending_seq_parallel.info
+          genhtml max_ascending_seq_parallel.info --output-directory coverage-report/
 
       - name: Archive coverage test results
         uses: actions/upload-artifact@v2
