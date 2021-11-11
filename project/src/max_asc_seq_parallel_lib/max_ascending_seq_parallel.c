@@ -143,7 +143,7 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     }
 
     size_t max_len = limits[0]->len;
-    for (size_t i = 1; i < count_thread && max_len <= size / 2u; ++i) {
+    for (size_t i = 1; (i < count_thread) && (max_len <= size / 2u); ++i) {
         if (limits[i]->len > max_len) {
             max_len = limits[i]->len;
         }
