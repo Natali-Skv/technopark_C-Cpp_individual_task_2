@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 project(tp_hw2)
+# option "-DUSE_PARALLEL=1" for use shared asinc library in main
 
 set(CMAKE_CXX_FLAGS "-g -O0 -Wall  -Wextra -Wno-unused-variable -Wpedantic -fprofile-arcs -ftest-coverage -pthread -Wno-unknown-pragmas -Wno-sign-compare  -Wwrite-strings -Wno-unused")
 set(CMAKE_C_FLAGS "-g -O0 -Wall -Werror -Wextra -Wno-unused-variable -Wpedantic -fprofile-arcs -ftest-coverage -Wno-unknown-pragmas -Wno-sign-compare -Wwrite-strings -Wno-unused ")
