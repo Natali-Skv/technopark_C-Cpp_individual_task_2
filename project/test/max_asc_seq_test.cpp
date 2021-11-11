@@ -69,7 +69,7 @@ TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_25mln) {
     result_file.close();
 }
 
-/*
+
 TEST_F(Fixture, GET_MAX_ASC_EMPTY) {
     result_file << Fixture::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin", 0u)<<' ';
 }
@@ -83,4 +83,3 @@ TEST(GET_MAX_SEQ_LEN, INVALID_ARGS) {
     result_file<<max_asc_len<<' ';
     EXPECT_EQ(max_asc_len, 0u);
 }
-*/

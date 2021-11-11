@@ -11,6 +11,6 @@ set(CMAKE_C_FLAGS "-g -O0 -Wall -Werror -Wextra -Wno-unused-variable -Wpedantic 
 set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 set(INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/project/include)
 
-add_library(max_asc_seq_parallel SHARED ${MAX_ASC_SEQ_PARALLEL_SRCS})
-target_include_directories(max_asc_seq_parallel PRIVATE ${INCLUDE_DIRS})
-target_link_libraries(max_asc_seq_parallel Threads::Threads)
+add_library(max_asc_seq_parallel_lib SHARED ${MAX_ASC_SEQ_PARALLEL_SRCS})
+target_include_directories(max_asc_seq_parallel_lib PRIVATE ${INCLUDE_DIRS})
+target_link_libraries(max_asc_seq_parallel_lib Threads::Threads)

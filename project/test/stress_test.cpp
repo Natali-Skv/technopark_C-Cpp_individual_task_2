@@ -37,6 +37,7 @@ bool AreFilesEq(FILE *f1, FILE *f2) {
 }
 
 int ExecuteInOtherProc(const char *binName) {
+    errno = 0;
     if (!binName) {
         return 0;
     }
@@ -47,20 +48,21 @@ int ExecuteInOtherProc(const char *binName) {
 
     if (pid == 0) {
         execl(binName, binName, NULL);
-        exit(EXIT_SUCCESS);
+        if (errno) {
+            perror("");
+            exit(EXIT_FAILURE);
+        }
     }
     return pid;
 }
 
 int main() {
     if (ExecuteInOtherProc(TEST_ASINC_PATH) == -1) {
-        std::perror("fork() faild");
         std::cout << "stress test has been failed";
         return 0;
     }
 
     if (ExecuteInOtherProc(TEST_SINC_PATH) == -1) {
-        std::perror("fork() faild");
         std::cout << "stress test has been failed";
         return 0;
     }
@@ -68,7 +70,6 @@ int main() {
     int status = 0u;
     wait(&status);
     if (status != EXIT_SUCCESS) {
-        std::perror("fork() faild");
         std::cout << "stress test has been failed";
         return 0;
     }

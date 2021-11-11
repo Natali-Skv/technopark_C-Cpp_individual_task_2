@@ -6,18 +6,12 @@
 
 #include <max_ascending_seq.h>
 
-#define ARRAY_IS_NULL -1
-#define NOT_CORRECT_SIZE -2
-#define MEMORY_NO_ALLOCATED -3
-#define THREAD_NOT_CREATE -4
-
 typedef struct arg_struct {
     size_t start_pos;
     size_t end_pos;
     size_t len;
     const int *array;
 } args;
-
 
 void *find_len(void *arg) {
     args *limits = (args *) arg;
@@ -48,13 +42,11 @@ void *find_len(void *arg) {
 }
 
 size_t get_max_asc_seq_len(const int *array, size_t size) {
-    if (array == NULL) {
-        printf("Array is NULL");
-        return ARRAY_IS_NULL;
+    if (!array) {
+        return 0u;
     }
     if (size < 1) {
-        printf("Wrong size");
-        return NOT_CORRECT_SIZE;
+        return 0u;
     }
 
     if (size == 1) {
@@ -67,9 +59,8 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
 
     if (size < count_thread) {
         array_limits = (size_t *) malloc(size * sizeof(size_t));
-        if (array_limits == NULL) {
-            printf("No memory allocated");
-            return MEMORY_NO_ALLOCATED;
+        if (!array_limits) {
+            return 0u;
         }
         for (size_t i = 0; i < size; ++i) {
             array_limits[i] = i;
@@ -77,9 +68,8 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
         count_thread = size;
     } else {
         array_limits = (size_t *) malloc(count_thread * sizeof(size_t));
-        if (array_limits == NULL) {
-            printf("No memory allocated");
-            return MEMORY_NO_ALLOCATED;
+        if (!array_limits) {
+            return 0u;
         }
         for (size_t i = 0; i < count_thread - 1; ++i) {
             array_limits[i] = size / count_thread * (i + 1) - 1;
@@ -106,9 +96,8 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     if (count_thread != new_count_limits) {
         size_t *new_limits;
         new_limits = (size_t *) malloc(new_count_limits * sizeof(size_t));
-        if (new_limits == NULL) {
-            printf("No memory allocated");
-            return MEMORY_NO_ALLOCATED;
+        if (!new_limits) {
+            return 0u;
         }
         size_t j = 0;
         new_limits[j++] = array_limits[0];
@@ -124,23 +113,20 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
 
     pthread_t *threads;
     threads = (pthread_t *) malloc(count_thread * sizeof(pthread_t));
-    if (threads == NULL) {
-        printf("No memory allocated");
+    if (!threads) {
         free(array_limits);
-        return MEMORY_NO_ALLOCATED;
+        return 0u;
     }
     args **limits = (args **) malloc(count_thread * sizeof(args *));
-    if (limits == NULL) {
+    if (!limits) {
         free(array_limits);
         free(threads);
-        printf("No memory allocated");
-        return MEMORY_NO_ALLOCATED;
+        return 0u;
     }
     for (size_t i = 0; i < count_thread; ++i) {
         limits[i] = (args *) malloc(sizeof(args));
-        if (limits[i] == NULL) {
-            printf("No memory allocated");
-            return MEMORY_NO_ALLOCATED;
+        if (!limits[i]) {
+            return 0u;
         }
         limits[i]->array = array;
         limits[i]->start_pos = i < 1 ? 0 : array_limits[i - 1] + 1;
@@ -151,8 +137,7 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
         int check_flag = pthread_create(&threads[i], NULL,
                                         find_len, (void *) limits[i]);
         if (check_flag != 0) {
-            printf("Thread not create");
-            return THREAD_NOT_CREATE;
+            return 0u;
         }
     }
     for (size_t i = 0; i < count_thread; ++i) {
