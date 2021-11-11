@@ -56,13 +56,13 @@ jobs:
           mkdir coverage && cd coverage
           mkdir coverage && cd coverage
 
-          gcov ../cmake-build-debug/CMakeFiles/file_lib.dir/project/src/file.c.gcno
-          gcov ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/max_ascending_seq.c.gcno
-          gcov ../cmake-build-debug/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/max_ascending_seq_parallel.c.gcno
+          gcov ../build/CMakeFiles/file_lib.dir/project/src/file.c.gcno
+          gcov ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/max_ascending_seq.c.gcno
+          gcov ../build/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/max_ascending_seq_parallel.c.gcno
 
-          cp -r ../cmake-build-debug/CMakeFiles/file_lib.dir/project/src/ .
-          cp -r ../cmake-build-debug/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/ .
-          cp -r ../cmake-build-debug/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/ .
+          cp -r ../build/CMakeFiles/file_lib.dir/project/src/ .
+          cp -r ../build/project/src/max_asc_seq_lib/CMakeFiles/max_asc_seq_lib.dir/ .
+          cp -r ../build/project/src/max_asc_seq_parallel_lib/CMakeFiles/max_asc_seq_parallel_lib.dir/ .
 
           cd ..
           lcov --capture --directory coverage/ --output-file file.info
