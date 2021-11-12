@@ -11,7 +11,7 @@ extern "C" {
 static std::ofstream result_file(RESULT_FILE);
 
 class Fixture : public ::testing::Test {
- protected:
+protected:
     size_t SetUp(const char *finPath, size_t expLen) {
         FILE *fin = open_file(finPath, "r");
         if (!fin) {
@@ -33,7 +33,6 @@ class Fixture : public ::testing::Test {
 
 TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_10) {
     result_file << Fixture::SetUp(PROJECT_PATH "test/fin_fout/10_out_of_10/fin", 10u) << ' ';
-    result_file.close();
 }
 
 TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_14_OUT_OF_40) {
@@ -71,15 +70,17 @@ TEST_F(Fixture, GET_MAX_ASC_SEQ_LEN_10_OUT_OF_25mln) {
 
 
 TEST_F(Fixture, GET_MAX_ASC_EMPTY) {
-    result_file << Fixture::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin", 0u)<<' ';
+    result_file << Fixture::SetUp(PROJECT_PATH "test/fin_fout/empty_array/fin", 0u) << ' ';
 }
 
 TEST(GET_MAX_SEQ_LEN, INVALID_ARGS) {
     size_t max_asc_len = get_max_asc_seq_len(NULL, 100);
-    result_file<<max_asc_len<<' ';
+    result_file << max_asc_len << ' ';
     EXPECT_EQ(max_asc_len, 0u);
     int a;
     max_asc_len = get_max_asc_seq_len(&a, 0);
-    result_file<<max_asc_len<<' ';
+    result_file << max_asc_len << ' ';
     EXPECT_EQ(max_asc_len, 0u);
+
+    result_file.close();
 }
