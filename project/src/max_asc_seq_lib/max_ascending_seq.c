@@ -1,7 +1,5 @@
 // Copyright 2021 nat-s.skv@mail.ru
-
 #include <stdio.h>
-#include <stdlib.h>
 
 #include <max_ascending_seq.h>
 

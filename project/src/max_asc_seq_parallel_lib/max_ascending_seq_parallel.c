@@ -6,153 +6,159 @@
 
 #include <max_ascending_seq.h>
 
+// TODO: поставить норм значения
+#define MIN_LEN_ONE_THREAD 5u
+
 typedef struct {
-    size_t start_pos;
-    size_t end_pos;
-    size_t len;
-    const int *array;
-} args;
+    const int *start_el;
+    const int *end_el;
+    size_t asc_seq_len_at_beg;
+    size_t asc_seq_len_at_end;
+    size_t max_asc_seq_len_at_mid;
+} thread_result;
 
-void *find_len(void *arg) {
-    args *limits = (args *) arg;
 
-    if (limits->start_pos == limits->end_pos) {
-        size_t res_len = 1;
-        limits->len = res_len;
-        return NULL;
-    }
+size_t get_max_asc_seq_len_one_thread(const int *array, size_t size);
 
-    size_t max_len = 0, checked_len = 1;
-    for (size_t i = limits->start_pos + 1; i <= limits->end_pos; ++i) {
-        if (i != limits->end_pos && limits->array[i - 1] < limits->array[i]) {
-            ++checked_len;
-        } else {
-            if (i == limits->end_pos && limits->array[limits->end_pos - 1] < limits->array[limits->end_pos]) {
-                ++checked_len;
-            }
-            if (checked_len > max_len) {
-                max_len = checked_len;
-            }
-            checked_len = 1;
-        }
-    }
-    limits->len = max_len;
-    return NULL;
-}
+void *process_array_block(void *);
 
 size_t get_max_asc_seq_len(const int *array, size_t size) {
     if (!array) {
         return 0u;
     }
-    if (size < 1) {
+    if (!size) {
         return 0u;
     }
 
-    if (size == 1) {
-        return size;
+    size_t thread_num = (size_t) sysconf(_SC_NPROCESSORS_ONLN) < (size / MIN_LEN_ONE_THREAD) ?
+                        (size_t) sysconf(_SC_NPROCESSORS_ONLN) : (size / MIN_LEN_ONE_THREAD);
+    if (!thread_num) {
+        thread_num = 1u;
+    }
+    if (thread_num == 1u) {
+        return get_max_asc_seq_len_one_thread(array, size);
     }
 
-    size_t count_thread = sysconf(_SC_NPROCESSORS_ONLN);
+    pthread_t threads[thread_num];
+    thread_result thread_results[thread_num];
 
-    size_t *array_limits;
+    size_t block_len = size / thread_num;
+    for (size_t i = 0u; i < thread_num - 1u; ++i) {
+        thread_results[i].start_el = array + i * block_len;
+        thread_results[i].end_el = array + (i + 1) * block_len - 1u;
+    }
+    thread_results[thread_num - 1u].start_el = array + (thread_num - 1u) * block_len;
+    thread_results[thread_num - 1u].end_el = array + (thread_num) * block_len - 1u + size % thread_num;
 
-    if (size < count_thread) {
-        array_limits = (size_t *) malloc(size * sizeof(size_t));
-        if (!array_limits) {
-            return 0u;
-        }
-        for (size_t i = 0; i < size; ++i) {
-            array_limits[i] = i;
-        }
-        count_thread = size;
-    } else {
-        array_limits = (size_t *) malloc(count_thread * sizeof(size_t));
-        if (!array_limits) {
-            return 0u;
-        }
-        for (size_t i = 0; i < count_thread - 1; ++i) {
-            array_limits[i] = size / count_thread * (i + 1) - 1;
-        }
-        array_limits[count_thread - 1] = size - 1;
-    }
-
-    for (size_t i = count_thread - 1; i > 0; --i) {
-        while (array[array_limits[i - 1]] < array[array_limits[i - 1] + 1]) {
-            ++array_limits[i - 1];
-            if (array_limits[i - 1] == array_limits[i]) {
-                break;
-            }
-        }
-    }
-
-    size_t new_count_limits = count_thread;
-    for (size_t i = count_thread - 1; i > 0; --i) {
-        if (array_limits[i - 1] == array_limits[i]) {
-            --new_count_limits;
-        }
-    }
-
-    if (count_thread != new_count_limits) {
-        size_t *new_limits;
-        new_limits = (size_t *) malloc(new_count_limits * sizeof(size_t));
-        if (!new_limits) {
-            return 0u;
-        }
-        size_t j = 0;
-        new_limits[j++] = array_limits[0];
-        for (size_t i = 1; i < count_thread; ++i) {
-            if (array_limits[i - 1] != array_limits[i]) {
-                new_limits[j++] = array_limits[i];
-            }
-        }
-        free(array_limits);
-        array_limits = new_limits;
-        count_thread = new_count_limits;
-    }
-
-    pthread_t *threads;
-    threads = (pthread_t *) malloc(count_thread * sizeof(pthread_t));
-    if (!threads) {
-        free(array_limits);
-        return 0u;
-    }
-    args **limits = (args **) malloc(count_thread * sizeof(args *));
-    if (!limits) {
-        free(array_limits);
-        free(threads);
-        return 0u;
-    }
-    for (size_t i = 0; i < count_thread; ++i) {
-        limits[i] = (args *) malloc(sizeof(args));
-        if (!limits[i]) {
-            return 0u;
-        }
-        limits[i]->array = array;
-        limits[i]->start_pos = i < 1 ? 0 : array_limits[i - 1] + 1;
-        limits[i]->end_pos = array_limits[i];
-    }
-
-    for (size_t i = 0; i < count_thread; ++i) {
-        int check_flag = pthread_create(&threads[i], NULL, find_len, (void *) limits[i]);
-        if (check_flag != 0) {
+    for (size_t i = 0; i < thread_num; ++i) {
+        if (pthread_create(&threads[i], NULL, process_array_block, (void *) &thread_results[i]) != EXIT_SUCCESS) {
             return 0u;
         }
     }
-    for (size_t i = 0; i < count_thread; ++i) {
+
+    for (size_t i = 0; i < thread_num; ++i) {
         pthread_join(threads[i], NULL);
     }
 
-    size_t max_len = limits[0]->len;
-    for (size_t i = 1; (i < count_thread) && (max_len <= size / 2u); ++i) {
-        if (limits[i]->len > max_len) {
-            max_len = limits[i]->len;
+    size_t cross_block_asc_seq_len = thread_results[0u].asc_seq_len_at_end;
+    size_t max_asc_seq_len = 1u;
+    for (size_t i = 0; i < thread_num - 1u; ++i) {
+        if (max_asc_seq_len < thread_results[i].max_asc_seq_len_at_mid) {
+            max_asc_seq_len = thread_results[i].max_asc_seq_len_at_mid;
+        }
+        if (*(thread_results[i].end_el) < *(thread_results[i + 1u].start_el)) {
+            if (thread_results[i + 1u].max_asc_seq_len_at_mid < block_len) {
+                if (max_asc_seq_len < (cross_block_asc_seq_len + thread_results[i + 1u].asc_seq_len_at_beg)) {
+                    max_asc_seq_len = cross_block_asc_seq_len + thread_results[i + 1u].asc_seq_len_at_beg;
+                }
+                cross_block_asc_seq_len = thread_results[i + 1u].asc_seq_len_at_end;
+            } else {
+                cross_block_asc_seq_len += thread_results[i + 1u].max_asc_seq_len_at_mid;
+            }
+        } else {
+            if (max_asc_seq_len < cross_block_asc_seq_len) {
+                max_asc_seq_len = cross_block_asc_seq_len;
+            }
+            cross_block_asc_seq_len = thread_results[i + 1u].asc_seq_len_at_end;
         }
     }
-    for (size_t i = 0; i < count_thread; ++i) {
-        free(limits[i]);
+
+    if (max_asc_seq_len < thread_results[thread_num - 1u].max_asc_seq_len_at_mid) {
+        max_asc_seq_len = thread_results[thread_num - 1u].max_asc_seq_len_at_mid;
     }
-    free(limits);
-    free(threads);
-    free(array_limits);
-    return max_len;
+
+    if (max_asc_seq_len < cross_block_asc_seq_len) {
+        max_asc_seq_len = cross_block_asc_seq_len;
+    }
+    return max_asc_seq_len;
+}
+
+
+void *process_array_block(void *args) {
+    if (!args) {
+        return EXIT_SUCCESS;
+    }
+    thread_result *block_data = (thread_result *) args;
+    if (!block_data->start_el || !block_data->end_el) {
+        return EXIT_SUCCESS;
+    }
+    size_t len = block_data->end_el - block_data->start_el + 1;
+    if (len == 1u) {
+        block_data->asc_seq_len_at_beg = 1u;
+        block_data->max_asc_seq_len_at_mid = 1u;
+        block_data->asc_seq_len_at_beg = 1u;
+        return EXIT_SUCCESS;
+    }
+    const int *block = block_data->start_el;
+    size_t i = 1u;
+    block_data->asc_seq_len_at_beg = 1u;
+    for (; i < len && block[i - 1u] < block[i]; ++i) {
+        ++block_data->asc_seq_len_at_beg;
+    }
+    if (i == len) {
+        block_data->max_asc_seq_len_at_mid = len;
+        block_data->asc_seq_len_at_end = len;
+        return EXIT_SUCCESS;
+    }
+    size_t end_asc_seq_at_beg = i;
+    block_data->asc_seq_len_at_end = 1u;
+    for (i = len - 1; i > end_asc_seq_at_beg && block[i - 1u] < block[i]; --i) {
+        ++block_data->asc_seq_len_at_end;
+    }
+
+    block_data->max_asc_seq_len_at_mid = get_max_asc_seq_len_one_thread(block + end_asc_seq_at_beg,
+                                                                        len - block_data->asc_seq_len_at_beg -
+                                                                        block_data->asc_seq_len_at_end);
+    if (block_data->asc_seq_len_at_beg > block_data->max_asc_seq_len_at_mid) {
+        block_data->max_asc_seq_len_at_mid = block_data->asc_seq_len_at_beg;
+    }
+    if (block_data->asc_seq_len_at_end > block_data->max_asc_seq_len_at_mid) {
+        block_data->max_asc_seq_len_at_mid = block_data->asc_seq_len_at_end;
+    }
+    return EXIT_SUCCESS;
+}
+
+size_t get_max_asc_seq_len_one_thread(const int *array, size_t size) {
+    if (!array) {
+        return 0u;
+    }
+    if (!size) {
+        return 0u;
+    }
+    size_t max_asc_len = 0u;
+    size_t curr_seq_len = 1u;
+    for (size_t i = 1u; i < size && max_asc_len < size / 2 + 1; ++i) {
+        if (array[i] > array[i - 1]) {
+            ++curr_seq_len;
+            continue;
+        }
+        if (curr_seq_len > max_asc_len) {
+            max_asc_len = curr_seq_len;
+        }
+        curr_seq_len = 1u;
+    }
+    if (curr_seq_len > max_asc_len) {
+        max_asc_len = curr_seq_len;
+    }
+    return max_asc_len;
 }
