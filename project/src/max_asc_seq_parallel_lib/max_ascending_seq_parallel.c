@@ -16,9 +16,9 @@ typedef struct {
     size_t max_asc_seq_len_at_mid;
 } thread_result;
 
-size_t get_max_asc_seq_len_one_thread(const int *array, size_t size);
+static size_t get_max_asc_seq_len_one_thread(const int *array, size_t size);
 
-void *process_array_block(void *);
+static void *process_array_block(void *);
 
 size_t get_max_asc_seq_len(const int *array, size_t size) {
     if (!array) {
@@ -88,7 +88,7 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     return max_asc_seq_len;
 }
 
-void *process_array_block(void *args) {
+static void *process_array_block(void *args) {
     if (!args) {
         return EXIT_SUCCESS;
     }
@@ -132,7 +132,7 @@ void *process_array_block(void *args) {
     return EXIT_SUCCESS;
 }
 
-size_t get_max_asc_seq_len_one_thread(const int *array, size_t size) {
+static size_t get_max_asc_seq_len_one_thread(const int *array, size_t size) {
     if (!array) {
         return 0u;
     }
