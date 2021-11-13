@@ -37,7 +37,7 @@ int run(int argc, char *argv[]) {
     fprintf(fout, "%zu", get_max_asc_seq_len(array, size));
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-    printf("time multi:  %ld nanoseconds\n", (end.tv_sec - start.tv_sec) * MICROSECOND_IN_SECOND +
+    printf("working time:  %ld nanoseconds\n", (end.tv_sec - start.tv_sec) * MICROSECOND_IN_SECOND +
                                              (end.tv_nsec - start.tv_nsec) / NANOSECOND_IN_MICROSECOND);
     free(array);
     if (close_file(fin) || close_file(fout)) {

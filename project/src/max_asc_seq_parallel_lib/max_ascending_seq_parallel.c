@@ -40,7 +40,7 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     pthread_t threads[thread_num];
     thread_result thread_results[thread_num];
 
-    size_t block_len = size / thread_num;
+    size_t block_len = size / thread_num + (size % thread_num != 0);
     for (size_t i = 0u; i < thread_num - 1u; ++i) {
         thread_results[i].start_el = array + i * block_len;
         thread_results[i].end_el = array + (i + 1) * block_len - 1u;
@@ -60,11 +60,11 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
 
     size_t cross_block_asc_seq_len = thread_results[0u].asc_seq_len_at_end;
     size_t max_asc_seq_len = thread_results[0u].max_asc_seq_len_at_mid;
-    for (size_t i = 1u; i < thread_num ; ++i) {
+    for (size_t i = 1u; i < thread_num; ++i) {
         if (max_asc_seq_len < thread_results[i].max_asc_seq_len_at_mid) {
             max_asc_seq_len = thread_results[i].max_asc_seq_len_at_mid;
         }
-        if (*(thread_results[i-1u].end_el) < *(thread_results[i].start_el)) {
+        if (*(thread_results[i - 1u].end_el) < *(thread_results[i].start_el)) {
             if (thread_results[i].max_asc_seq_len_at_mid < block_len) {
                 if (max_asc_seq_len < (cross_block_asc_seq_len + thread_results[i].asc_seq_len_at_beg)) {
                     max_asc_seq_len = cross_block_asc_seq_len + thread_results[i].asc_seq_len_at_beg;
@@ -87,7 +87,6 @@ size_t get_max_asc_seq_len(const int *array, size_t size) {
     }
     return max_asc_seq_len;
 }
-
 
 void *process_array_block(void *args) {
     if (!args) {
